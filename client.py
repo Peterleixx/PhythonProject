@@ -2,6 +2,7 @@ import threading
 import socket
 import tkinter
 import tkinter.scrolledtext
+
 from tkinter import simpledialog
 from datetime import date
 
@@ -27,21 +28,42 @@ class Client:
         receive_thread = threading.Thread(target=self.receive)
         gui_thread.start()
         receive_thread.start()
+
     
     def window(self):
         self.win = tkinter.Tk()
-        self.board = tkinter.Label(self.win, text="Board")
+        self.win.configure(bg="gray")
+
+        self.board = tkinter.Label(self.win, text="Board",bg="gray")
+        self.board.config(font=("Arial",12))
+        self.board.pack(padx=20,pady=5)
+
         self.post_area = tkinter.scrolledtext.ScrolledText(self.win)
-        self.subject = tkinter.Label(self.win, text="Subject")
+        self.post_area.pack(padx=20,pady=5)
+        self.post_area.config(state='disabled')
+
+        self.subject = tkinter.Label(self.win, text="Subject",bg="gray")
+        self.subject.config(font=("Arial",12))
+        self.subject.pack(padx=20,pady=5)
+
         self.subject_input = tkinter.Text(self.win,height=2)
-        self.content = tkinter.Label(self.win, text="Content")
+        self.subject_input.pack(padx=20,pady=5)
+
+        self.content = tkinter.Label(self.win, text="Content",bg="gray")
+        self.content.pack(padx=20,pady=5)
+        self.content.config(font=("Arial",12))
+
         self.content_input = tkinter.Text(self.win,height=5)
+        self.content_input.pack(padx=20,pady=5)
 
         self.post_button = tkinter.Button(self.win, text="Post",command=self.post)
+        self.post_button.pack(padx=20,pady=5)
+        self.post_button.config(font=("Arial",12))
 
         self.gui_done = True
         self.win.protocol("WM_DELETE_WINDOW ",self.stop)
         self.win.mainloop()
+
 
     def post(self):
         subject = f"{self.subject_input.get('1.0','end')}"
