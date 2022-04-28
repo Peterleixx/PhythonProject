@@ -70,7 +70,8 @@ class Client:
         self.subject_input.delete('1.0','end')
         content = f"{self.content_input.get('1.0','end')}"
         self.content_input.delete('1.0','end')
-        post = f"From {self.username}:\nSubject: {subject}\nContent: {content}\nDate: {date.today}"
+        client_post = f"From {self.username}:\nSubject: {subject}\nContent: {content}\nDate: {date.today}"
+        self.client.post(client_post.encode('ascii'))
 
     def stop(self):
         self.running = False
