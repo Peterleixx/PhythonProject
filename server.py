@@ -14,21 +14,23 @@ print(f"Server is listenting")
 #List for client and the username
 clients = []
 usernames = []
-
+messages = []
 
 
 #Method broadcast the message to all clients
 def broadcast(message):
     for client in clients:
         client.send(message)
+        client.send(f"Message ID: {len(messages)}".encode(ascii))
 
 #Listening for messages from clients
 def listen(client):
     while True:
         try: 
-            #Send a message to check connection
             message = client.recv(1024)
             broadcast(message)
+            messages.append(message)
+            
         except:
             username = usernames[clients.index(client)]
             broadcast(f'{username} left the group'.encode('ascii'))
@@ -37,25 +39,28 @@ def listen(client):
             client.close()
             break
 
-# Receiving / Listening Function
+def history(client):
+    pass
+
+# Receiving the connection
 def receive():
     while True:
         # Accept Connection
         client, address = server.accept()
         print("Connected with {}".format(str(address)))
 
-        # Request And Store Nickname
+        # Request the username
         client.send('UN'.encode('ascii'))
-        name = client.recv(1024)
+        name = client.recv(1024).decode('ascii')
         usernames.append(name)
         clients.append(client)
 
-        # Print And Broadcast Nickname
+        # Print And Broadcast username
         print("Username is {}".format(name))
         broadcast("{} joined!".format(name).encode('ascii'))
         client.send('Connected to server!'.encode('ascii'))
 
-        # Start Handling Thread For Client
+        # Start listening thread that keep listen for the neww message
         thread = threading.Thread(target=listen, args=(client,))
         thread.start()
 receive()

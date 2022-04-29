@@ -2,9 +2,9 @@ import threading
 import socket
 import tkinter
 import tkinter.scrolledtext
-
+from tkinter import messagebox
 from tkinter import simpledialog
-from datetime import date
+import datetime
 
 #Assign the port and port of the serser.
 Host = '127.0.0.1'
@@ -22,7 +22,6 @@ class Client:
         self.username = simpledialog.askstring("User Name","Enter an username: ",parent=login)
 
         self.gui_done = False
-        self.running = True
 
         gui_thread = threading.Thread(target=self.window)
         receive_thread = threading.Thread(target=self.receive)
@@ -34,7 +33,7 @@ class Client:
         self.win = tkinter.Tk()
         self.win.configure(bg="gray")
 
-        self.board = tkinter.Label(self.win, text="Board",bg="gray")
+        self.board = tkinter.Label(self.win, text=f"{self.username}",bg="gray")
         self.board.config(font=("Arial",12))
         self.board.pack(padx=20,pady=5)
 
@@ -61,7 +60,7 @@ class Client:
         self.post_button.config(font=("Arial",12))
 
         self.gui_done = True
-        self.win.protocol("WM_DELETE_WINDOW ",self.stop)
+        self.win.protocol("WM_DELETE_WINDOW",self.stop)
         self.win.mainloop()
 
 
@@ -70,17 +69,17 @@ class Client:
         self.subject_input.delete('1.0','end')
         content = f"{self.content_input.get('1.0','end')}"
         self.content_input.delete('1.0','end')
-        client_post = f"From {self.username}:\nSubject: {subject}\nContent: {content}\nDate: {date.today}"
-        self.client.post(client_post.encode('ascii'))
+        self.message = f"From {self.username}:\n\nSubject: {subject}\nContent:\n {content}\nDate: {datetime.date.today()}"
+        self.client.send(self.message.encode('ascii'))
 
     def stop(self):
-        self.running = False
+        self.client.send(f"{self.username} leave the group.".encode('ascii'))
         self.client.close()
         self.win.destroy()
-        exit(0)
+        
 
     def receive(self): 
-        while self.running:
+        while True:
             try:
                 message = self.client.recv(1024).decode('ascii')
                 if message == 'UN':
